@@ -23,7 +23,7 @@ function altsys_admin_in_theme($s)
     }
 
     // outputs before cp_header()
-    @list($former_outputs, $tmp_s) = explode("<!DOCTYPE", $s, 2) ;
+    @list($former_outputs, $tmp_s) = explode('<!DOCTYPE', $s, 2) ;
     if (empty($tmp_s)) {
         $tmp_s = $s ;
     }
@@ -70,10 +70,10 @@ function altsys_admin_in_theme_in_last($contents = null)
     }
 
     // language files
-    if (file_exists(dirname(dirname(__FILE__)).'/language/'.$xoopsConfig['language'].'/admin_in_theme.php')) {
-        include_once dirname(dirname(__FILE__)).'/language/'.$xoopsConfig['language'].'/admin_in_theme.php' ;
+    if (file_exists(dirname(__DIR__).'/language/'.$xoopsConfig['language'].'/admin_in_theme.php')) {
+        include_once dirname(__DIR__).'/language/'.$xoopsConfig['language'].'/admin_in_theme.php' ;
     } else {
-        include_once dirname(dirname(__FILE__)).'/language/english/admin_in_theme.php' ;
+        include_once dirname(__DIR__).'/language/english/admin_in_theme.php' ;
     }
 
     // set the theme
@@ -89,15 +89,15 @@ function altsys_admin_in_theme_in_last($contents = null)
     }
     error_reporting($original_error_level) ;
 
-    include dirname(__FILE__).'/admin_in_theme_header.inc.php' ;
+    include __DIR__.'/admin_in_theme_header.inc.php' ;
 
 /*	// include adminmenu
     include XOOPS_CACHE_PATH.'/adminmenu.php' ;
 
     // admin permissions
-    $moduleperm_handler =& xoops_gethandler('groupperm');
+    $moduleperm_handler = xoops_gethandler('groupperm');
     $admin_mids = $moduleperm_handler->getItemIds('module_admin', $xoopsUser->getGroups());
-    $module_handler =& xoops_gethandler('module');
+    $module_handler = xoops_gethandler('module');
     $modules = $module_handler->getObjects(new Criteria('mid', "(".implode(',', $admin_mids).")", 'IN'), true);
     $admin_mids = array_keys($modules);
 
@@ -147,7 +147,7 @@ function altsys_admin_in_theme_in_last($contents = null)
         'xoops_breadcrumbs' => $xoops_breadcrumbs,
         'xoops_slogan' => htmlspecialchars($xoopsConfig['slogan'], ENT_QUOTES),
         'xoops_contents' => $xoops_admin_contents, //. '<div id="adminmenu_layers">' . $xoops_admin_menu_dv . '</div>' ,
-        'xoops_module_header' => $xoops_module_header,
+        'xoops_module_header' => $xoops_module_header
     )) ;
 
     // rendering

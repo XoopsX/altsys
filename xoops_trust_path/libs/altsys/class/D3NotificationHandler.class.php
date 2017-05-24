@@ -30,7 +30,7 @@ public static function &getInstance($conn = null)
         "$mydirpath/language/$language/mail_template/" ,
         "$mytrustdirpath/language/$language/mail_template/" ,
         "$mydirpath/language/english/mail_template/" ,
-        "$mytrustdirpath/language/english/mail_template/" ,
+        "$mytrustdirpath/language/english/mail_template/"
     ) ;
 
         $mail_template_dir = "$mytrustdirpath/language/english/mail_template/" ;
@@ -47,10 +47,10 @@ public static function &getInstance($conn = null)
 
     public function triggerEvent($mydirname, $mytrustdirname, $category, $item_id, $event, $extra_tags=array(), $user_list=array(), $omit_user_id=null)
     {
-        $module_hanlder =& xoops_gethandler('module') ;
-        $module =& $module_hanlder->getByDirname($mydirname) ;
+        $module_handler = xoops_getHandler('module') ;
+        $module = $module_handler->getByDirname($mydirname) ;
 
-        $notification_handler =& xoops_gethandler('notification') ;
+        $notification_handler = xoops_getHandler('notification') ;
         $mail_template_dir = $this->getMailTemplateDir($mydirname, $mytrustdirname) ;
 
     // calling a delegate before
@@ -65,8 +65,8 @@ public static function &getInstance($conn = null)
         $mid = $module->getVar('mid') ;
 
     // Check if event is enabled
-    $config_handler =& xoops_gethandler('config');
-        $mod_config =& $config_handler->getConfigsByCat(0, $mid);
+    $config_handler = xoops_getHandler('config');
+        $mod_config = $config_handler->getConfigsByCat(0, $mid);
         if (empty($mod_config['notification_enabled'])) {
             return false;
         }
@@ -85,16 +85,16 @@ public static function &getInstance($conn = null)
             }
         }
         $criteria = new CriteriaCompo();
-        $criteria->add(new Criteria('not_modid', intval($mid)));
+        $criteria->add(new Criteria('not_modid', (int)$mid));
         $criteria->add(new Criteria('not_category', $category));
-        $criteria->add(new Criteria('not_itemid', intval($item_id)));
+        $criteria->add(new Criteria('not_itemid', (int)$item_id));
         $criteria->add(new Criteria('not_event', $event));
         $mode_criteria = new CriteriaCompo();
         $mode_criteria->add(new Criteria('not_mode', XOOPS_NOTIFICATION_MODE_SENDALWAYS), 'OR');
         $mode_criteria->add(new Criteria('not_mode', XOOPS_NOTIFICATION_MODE_SENDONCETHENDELETE), 'OR');
         $mode_criteria->add(new Criteria('not_mode', XOOPS_NOTIFICATION_MODE_SENDONCETHENWAIT), 'OR');
         $criteria->add($mode_criteria);
-        $notifications =& $notification_handler->getObjects($criteria);
+        $notifications = $notification_handler->getObjects($criteria);
         if (empty($notifications)) {
             return;
         }

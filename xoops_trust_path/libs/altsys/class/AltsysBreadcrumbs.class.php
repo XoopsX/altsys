@@ -3,10 +3,9 @@
 // singleton for xoops_breadcrumbs
 class AltsysBreadcrumbs
 {
-
     public $paths = array() ;
 
-    public function AltsysBreadcrumbs()
+    public function __construct()
     {
     }
 //HACK by domifara for php5.3+
@@ -28,13 +27,13 @@ public static function &getInstance()
         if (substr($val['name'], 0, 1) == '_' && defined($val['name'])) {
             $ret[] = array(
                 'url' => $val['url'] ,
-                'name' => constant($val['name']) ,
+                'name' => constant($val['name'])
             ) ;
         } else {
             $ret[] = $val ;
         }
         }
-        unset($ret[ sizeof($ret) - 1 ]['url']) ;
+        unset($ret[count($ret) - 1 ]['url']) ;
         return $ret ;
     }
 

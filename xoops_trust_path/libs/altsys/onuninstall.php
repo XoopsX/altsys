@@ -12,7 +12,7 @@ if (! function_exists('altsys_onuninstall_base')) {
 
     // for Cube 2.1
     if (defined('XOOPS_CUBE_LEGACY')) {
-        $root =& XCube_Root::getSingleton();
+        $root = XCube_Root::getSingleton();
         $root->mDelegateManager->add('Legacy.Admin.Event.ModuleUninstall.' . ucfirst($mydirname) . '.Success', 'altsys_message_append_onuninstall') ;
         $ret = array() ;
     } else {
@@ -21,14 +21,14 @@ if (! function_exists('altsys_onuninstall_base')) {
         }
     }
 
-        $db =& XoopsDatabaseFactory::getDatabaseConnection() ;
+        $db = XoopsDatabaseFactory::getDatabaseConnection() ;
         $mid = $module->getVar('mid') ;
 
     // TABLES (loading mysql.sql)
-    $sql_file_path = dirname(__FILE__).'/sql/mysql.sql' ;
+    $sql_file_path = __DIR__.'/sql/mysql.sql' ;
         $prefix_mod = $db->prefix() . '_' . $mydirname ;
         if (file_exists($sql_file_path)) {
-            $ret[] = "SQL file found at <b>".htmlspecialchars($sql_file_path)."</b>.<br  /> Deleting tables...<br />";
+            $ret[] = 'SQL file found at <b>' . htmlspecialchars($sql_file_path) . '</b>.<br  /> Deleting tables...<br />';
             $sql_lines = file($sql_file_path) ;
             foreach ($sql_lines as $sql_line) {
                 if (preg_match('/^CREATE TABLE \`?([a-zA-Z0-9_-]+)\`? /i', $sql_line, $regs)) {
@@ -43,7 +43,7 @@ if (! function_exists('altsys_onuninstall_base')) {
         }
 
     // TEMPLATES (Not necessary because modulesadmin removes all templates)
-    /* $tplfile_handler =& xoops_gethandler( 'tplfile' ) ;
+    /* $tplfile_handler = xoops_gethandler( 'tplfile' ) ;
     $templates =& $tplfile_handler->find( null , 'module' , $mid ) ;
     $tcount = count( $templates ) ;
     if( $tcount > 0 ) {

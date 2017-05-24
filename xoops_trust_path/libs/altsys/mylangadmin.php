@@ -5,29 +5,29 @@
 //                       GIJOE <http://www.peak.ne.jp/>                      //
 // ------------------------------------------------------------------------- //
 
-require_once dirname(__FILE__).'/class/AltsysBreadcrumbs.class.php' ;
-include_once dirname(__FILE__)."/include/gtickets.php" ;
-include_once dirname(__FILE__).'/include/altsys_functions.php' ;
-include_once dirname(__FILE__).'/include/lang_functions.php' ;
-include_once dirname(__FILE__).'/class/D3LanguageManager.class.php' ;
+require_once __DIR__.'/class/AltsysBreadcrumbs.class.php' ;
+include_once __DIR__ . '/include/gtickets.php';
+include_once __DIR__.'/include/altsys_functions.php' ;
+include_once __DIR__.'/include/lang_functions.php' ;
+include_once __DIR__.'/class/D3LanguageManager.class.php' ;
 
 
 // only groups have 'module_admin' of 'altsys' can do that.
-$module_handler =& xoops_gethandler('module') ;
-$module =& $module_handler->getByDirname('altsys') ;
+$module_handler = xoops_getHandler('module') ;
+$module = $module_handler->getByDirname('altsys') ;
 if (! is_object($module)) {
     die('install altsys') ;
 }
-$moduleperm_handler =& xoops_gethandler('groupperm') ;
+$moduleperm_handler = xoops_getHandler('groupperm') ;
 if (! is_object(@$xoopsUser) || ! $moduleperm_handler->checkRight('module_admin', $module->getVar('mid'), $xoopsUser->getGroups())) {
     die('only admin of altsys can access this area') ;
 }
 
 
 // initials
-$db =& XoopsDatabaseFactory::getDatabaseConnection();
-(method_exists('MyTextSanitizer', 'sGetInstance') and $myts =& MyTextSanitizer::sGetInstance()) || $myts =& MyTextSanitizer::getInstance() ;
-$langman =& D3LanguageManager::getInstance() ;
+$db = XoopsDatabaseFactory::getDatabaseConnection();
+(method_exists('MyTextSanitizer', 'sGetInstance') and $myts = MyTextSanitizer::sGetInstance()) || $myts = MyTextSanitizer::getInstance() ;
+$langman = D3LanguageManager::getInstance() ;
 
 // language file of this controller
 altsys_include_language_file('mylangadmin') ;
@@ -38,10 +38,10 @@ if (! is_object($xoopsModule)) {
 }
 
 // set target_module if specified by $_GET['dirname']
-$module_handler =& xoops_gethandler('module');
+$module_handler = xoops_getHandler('module');
 if (! empty($_GET['dirname'])) {
     $dirname = preg_replace('/[^0-9a-zA-Z_-]/', '', $_GET['dirname']) ;
-    $target_module =& $module_handler->getByDirname($dirname) ;
+    $target_module = $module_handler->getByDirname($dirname) ;
 }
 
 if (! empty($target_module) && is_object($target_module)) {
@@ -49,7 +49,7 @@ if (! empty($target_module) && is_object($target_module)) {
     $target_mid = $target_module->getVar('mid') ;
     $target_dirname = $target_module->getVar('dirname') ;
     $target_dirname4sql = addslashes($target_dirname) ;
-    $target_mname = $target_module->getVar('name') . "&nbsp;" . sprintf("(%2.2f)", $target_module->getVar('version') / 100.0) ;
+    $target_mname = $target_module->getVar('name') . '&nbsp;' . sprintf('(%2.2f)', $target_module->getVar('version') / 100.0) ;
     //$query4redirect = '?dirname='.urlencode(strip_tags($_GET['dirname'])) ;
 } else {
     // not specified by dirname (for 3rd party modules as mylangadmin)
@@ -100,7 +100,7 @@ if ($dh) {
             continue ;
         }
         if (is_dir("$base_dir/$file")) {
-            list($count) = $db->fetchRow($db->query("SELECT COUNT(*) FROM ".$db->prefix("altsys_language_constants")." WHERE mid=$target_mid AND language='".addslashes($file)."'")) ;
+            list($count) = $db->fetchRow($db->query('SELECT COUNT(*) FROM ' . $db->prefix('altsys_language_constants') . " WHERE mid=$target_mid AND language='" . addslashes($file) . "'")) ;
             $languages[] = $file ;
             $languages4disp[] = $file . " ($count)" ;
         }
@@ -152,7 +152,7 @@ list($langfile_names, $constpref, $already_read) = altsys_mylangadmin_get_consta
 // get user_values should be overridden
 $langfile_constants = array() ;
 foreach ($langfile_names as $name) {
-    list($value) = $db->fetchRow($db->query("SELECT value FROM ".$db->prefix("altsys_language_constants")." WHERE mid=$target_mid AND language='$target_lang4sql' AND name='".addslashes($name)."'")) ;
+    list($value) = $db->fetchRow($db->query('SELECT value FROM ' . $db->prefix('altsys_language_constants') . " WHERE mid=$target_mid AND language='$target_lang4sql' AND name='" . addslashes($name) . "'")) ;
     $langfile_constants[ $name ] = $value ;
 }
 
@@ -194,11 +194,11 @@ if (! empty($_POST['do_update'])) {
     $overrides_counter = 0 ;
     foreach (array_reverse($langfile_names) as $name) {
         $user_value = $myts->stripSlashesGPC(@$_POST[$name]) ;
-        $db->query("DELETE FROM ".$db->prefix("altsys_language_constants")." WHERE mid=$target_mid AND language='$target_lang4sql' AND name='".addslashes($name)."'") ;
+        $db->query('DELETE FROM ' . $db->prefix('altsys_language_constants') . " WHERE mid=$target_mid AND language='$target_lang4sql' AND name='" . addslashes($name) . "'") ;
         if ($user_value !== '') {
             $overrides_counter ++ ;
             // Update table
-            $db->query("INSERT INTO ".$db->prefix("altsys_language_constants")." (mid,language,name,value) VALUES ($target_mid,'$target_lang4sql','".addslashes($name)."','".addslashes($user_value)."')") ;
+            $db->query('INSERT INTO ' . $db->prefix('altsys_language_constants') . " (mid,language,name,value) VALUES ($target_mid,'$target_lang4sql','" . addslashes($name) . "','" . addslashes($user_value) . "')") ;
             // rewrite script for cache
             // comment-out the line of define()
             if (empty($constpref)) {
@@ -263,7 +263,7 @@ if (altsys_get_core_type() == ALTSYS_CORE_TYPE_XCL21) {
             }
         }</strike>
         require_once XOOPS_TRUST_PATH."/libs/altsys/class/D3LanguageManager.class.php" ;
-        $langman =& D3LanguageManager::getInstance() ;
+        $langman = D3LanguageManager::getInstance() ;
         $langman->read( "main.php" , $xoopsModule->getVar("dirname") ) ;
 		</pre>
 	' ;
@@ -281,7 +281,7 @@ xoops_cp_header() ;
 altsys_include_mymenu() ;
 
 // breadcrumbs
-$breadcrumbsObj =& AltsysBreadcrumbs::getInstance() ;
+$breadcrumbsObj = AltsysBreadcrumbs::getInstance() ;
 if ($breadcrumbsObj->hasPaths()) {
     $breadcrumbsObj->appendPath(XOOPS_URL.'/modules/altsys/admin/index.php?mode=admin&amp;lib=altsys&amp;page=mylangadmin', _MI_ALTSYS_MENU_MYLANGADMIN) ;
     $breadcrumbsObj->appendPath('', $target_mname) ;
@@ -302,11 +302,11 @@ $tpl->assign(array(
     'use_my_language' => strlen($langman->my_language) > 0,
     'mylang_file_name' => htmlspecialchars($mylang_unique_path, ENT_QUOTES),
     'cache_file_name' => htmlspecialchars($cache_file_name, ENT_QUOTES),
-    'cache_file_mtime' => intval($cache_file_mtime),
+     'cache_file_mtime' => (int)$cache_file_mtime,
     'timezone_offset' => xoops_getUserTimestamp(0),
     'notice' => $notice4disp,
     'already_read' => $already_read,
-    'gticket_hidden' => $xoopsGTicket->getTicketHtml(__LINE__, 1800, 'altsys'),
+    'gticket_hidden' => $xoopsGTicket->getTicketHtml(__LINE__, 1800, 'altsys')
 )) ;
 $tpl->display('db:altsys_main_mylangadmin.html') ;
 

@@ -26,8 +26,8 @@ class SetupAltsysLangMgr extends XCube_ActionFilter
 }
 
 
-require_once XOOPS_ROOT_PATH . "/core/XCube_LanguageManager.class.php";
-require_once XOOPS_ROOT_PATH . "/modules/legacy/kernel/Legacy_LanguageManager.class.php";
+require_once XOOPS_ROOT_PATH . '/core/XCube_LanguageManager.class.php';
+require_once XOOPS_ROOT_PATH . '/modules/legacy/kernel/Legacy_LanguageManager.class.php';
 
 class AltsysLangMgr_LanguageManager extends Legacy_LanguageManager
 {
@@ -40,8 +40,8 @@ class AltsysLangMgr_LanguageManager extends Legacy_LanguageManager
         if (! file_exists($langmanpath)) {
             die('install the latest altsys') ;
         }
-        require_once($langmanpath) ;
-        $this->langman =& D3LanguageManager::getInstance() ;
+        require_once $langmanpath;
+        $this->langman = D3LanguageManager::getInstance() ;
         $this->langman->language = $this->mLanguageName ;
 
         parent::prepare();
@@ -51,7 +51,7 @@ class AltsysLangMgr_LanguageManager extends Legacy_LanguageManager
     {
         // read/check once (selected_theme)/language/(lang).php
         if (! $this->theme_lang_checked) {
-            $root =& XCube_Root::getSingleton() ;
+            $root = XCube_Root::getSingleton() ;
             if (! empty($root->mContext->mXoopsConfig['theme_set'])) {
                 $langdir = XOOPS_THEME_PATH.'/'.$root->mContext->mXoopsConfig['theme_set'].'/language' ;
                 if (file_exists($langdir)) {
@@ -96,8 +96,8 @@ class AltsysLangMgr_LanguageManager extends Legacy_LanguageManager
         //
         // Now, if XOOPS_USE_MULTIBYTES isn't defined, set zero to it.
         //
-        if (!defined("XOOPS_USE_MULTIBYTES")) {
-            define("XOOPS_USE_MULTIBYTES", 0);
+        if (!defined('XOOPS_USE_MULTIBYTES')) {
+            define('XOOPS_USE_MULTIBYTES', 0);
         }
     }
 }

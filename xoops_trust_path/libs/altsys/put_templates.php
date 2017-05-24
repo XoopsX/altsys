@@ -5,9 +5,9 @@
 //                        GIJOE <http://www.peak.ne.jp/>                     //
 // ------------------------------------------------------------------------- //
 
-include_once dirname(__FILE__).'/include/gtickets.php' ;
-include_once dirname(__FILE__).'/include/altsys_functions.php' ;
-include_once dirname(__FILE__).'/include/tpls_functions.php' ;
+include_once __DIR__.'/include/gtickets.php' ;
+include_once __DIR__.'/include/altsys_functions.php' ;
+include_once __DIR__.'/include/tpls_functions.php' ;
 
 
 // this page can be called only from altsys
@@ -20,7 +20,7 @@ if ($xoopsModule->getVar('dirname') != 'altsys') {
 altsys_include_language_file('compilehookadmin') ;
 
 
-$db =& XoopsDatabaseFactory::getDatabaseConnection() ;
+$db = XoopsDatabaseFactory::getDatabaseConnection() ;
 
 if (empty($_FILES['tplset_archive']['tmp_name']) || ! is_uploaded_file($_FILES['tplset_archive']['tmp_name'])) {
     die(_TPLSADMIN_ERR_NOTUPLOADED) ;
@@ -45,7 +45,7 @@ $orig_filename4check = strtolower($_FILES['tplset_archive']['name']) ;
 if (strtolower(substr($orig_filename4check, -4)) == '.zip') {
 
     // zip
-    require_once dirname(__FILE__).'/include/Archive_Zip.php' ;
+    require_once __DIR__.'/include/Archive_Zip.php' ;
     $reader = new Archive_Zip($_FILES['tplset_archive']['tmp_name']) ;
     $files = $reader->extract(array( 'extract_as_string' => true )) ;
     if (! is_array(@$files)) {
@@ -57,13 +57,13 @@ if (strtolower(substr($orig_filename4check, -4)) == '.zip') {
     // tar.gz
     require_once XOOPS_ROOT_PATH.'/class/class.tar.php' ;
     $tar = new tar() ;
-    $tar->openTar($_FILES['tplset_archive']['tmp_name']) ;
+    $tar->openTAR($_FILES['tplset_archive']['tmp_name']) ;
     $files = array() ;
     foreach ($tar->files as $id => $info) {
         $files[] = array(
             'filename' => $info['name'] ,
             'mtime' => $info['time'] ,
-            'content' => $info['file'] ,
+            'content' => $info['file']
         ) ;
     }
     if (empty($files)) {

@@ -1,5 +1,5 @@
 <?php
-require_once dirname(dirname(__FILE__)).'/class/altsysUtils.class.php' ;
+require_once dirname(__DIR__).'/class/altsysUtils.class.php' ;
 
 define('ALTSYS_ADMINMENU_FILE', XOOPS_CACHE_PATH.'/adminmenu.php') ;
 define('ALTSYS_ADMINMENU_HACK_NONE', 0) ;
@@ -45,7 +45,7 @@ function altsys_adminmenu_insert_mymenu_x20(&$module)
     if (! preg_match('/popUpL(\d+)/', $xoops_admin_menu_ft[$mid], $regs)) {
         return ;
     }
-    $popup_no = intval($regs[1]) ;
+    $popup_no = (int)$regs[1];
 
     // replace
     $search  = '<img src=\''.XOOPS_URL.'/images/pointer.gif\' width=\'8\' height=\'8\' alt=\'\' />&nbsp;<a href=\''.XOOPS_URL.'/modules/system/admin.php?fct=preferences&amp;op=showmod&amp;mod='.$mid.'\'' ;
@@ -68,8 +68,8 @@ function altsys_adminmenu_insert_mymenu_x20(&$module)
     }
 
     // insert tplsadmin
-    $db =& XoopsDatabaseFactory::getDatabaseConnection() ;
-    list($count) = $db->fetchRow($db->query("SELECT COUNT(*) FROM ".$db->prefix("tplfile")." WHERE tpl_module='$dirname'")) ;
+    $db = XoopsDatabaseFactory::getDatabaseConnection() ;
+    list($count) = $db->fetchRow($db->query('SELECT COUNT(*) FROM ' . $db->prefix('tplfile') . " WHERE tpl_module='$dirname'")) ;
     if ($count > 0) {
         $tplsadmin_title = defined('_MD_A_MYMENU_MYTPLSADMIN') ? _MD_A_MYMENU_MYTPLSADMIN : 'tplsadmin' ;
         $insert = '<img src=\''.XOOPS_URL.'/images/pointer.gif\' width=\'8\' height=\'8\' alt=\'\' />&nbsp;<a href=\''.XOOPS_URL.'/modules/'.$dirname.'/admin/index.php?mode=admin&amp;lib=altsys&amp;page=mytplsadmin\'>'.$tplsadmin_title.'</a><br />'."\n".$insert ;
@@ -79,7 +79,7 @@ function altsys_adminmenu_insert_mymenu_x20(&$module)
     $xoops_admin_menu_dv = preg_replace('#'.preg_quote($anchor).'#', $anchor.$insert, $xoops_admin_menu_dv) ;
 
     // write back
-    altsys_adminmenu_save_x20(array( 'xoops_admin_menu_js' => $xoops_admin_menu_js, 'xoops_admin_menu_ml' => $xoops_admin_menu_ml, 'xoops_admin_menu_sd' => $xoops_admin_menu_sd, 'xoops_admin_menu_ft' => $xoops_admin_menu_ft, 'xoops_admin_menu_dv' => $xoops_admin_menu_dv, 'altsys_adminmenu_ft_hacked' => intval(@$altsys_adminmenu_ft_hacked), 'altsys_adminmenu_dv_updated' => true )) ;
+    altsys_adminmenu_save_x20(array( 'xoops_admin_menu_js' => $xoops_admin_menu_js, 'xoops_admin_menu_ml' => $xoops_admin_menu_ml, 'xoops_admin_menu_sd' => $xoops_admin_menu_sd, 'xoops_admin_menu_ft' => $xoops_admin_menu_ft, 'xoops_admin_menu_dv' => $xoops_admin_menu_dv, 'altsys_adminmenu_ft_hacked' => (int)(@$altsys_adminmenu_ft_hacked), 'altsys_adminmenu_dv_updated' => true )) ;
 }
 
 //
@@ -137,11 +137,11 @@ function altsys_adminmenu_hack_ft_2col_x20()
     $replace_fmt = ' alt="%s" /></a>' ;
 
     $is_left = true ;
-    $module_handler =& xoops_gethandler('module') ;
+    $module_handler = xoops_getHandler('module') ;
     $mids = array_keys($xoops_admin_menu_ft) ;
-    $last_mid = $mids[ sizeof($mids) - 1 ] ;
+    $last_mid = $mids[count($mids) - 1 ] ;
     foreach ($mids as $mid) {
-        $module =& $module_handler->get($mid) ;
+        $module = $module_handler->get($mid) ;
         $new_menu_ft = preg_replace('#'.preg_quote($search).'#', sprintf($replace_fmt, $module->getVar('name')), $xoops_admin_menu_ft[$mid]) ;
         if ($is_left) {
             if ($mid == $last_mid) {
@@ -192,10 +192,10 @@ function altsys_adminmenu_hack_ft_noimg_x20()
         }
     }
 
-    $module_handler =& xoops_gethandler('module') ;
+    $module_handler = xoops_getHandler('module') ;
     $mids = array_keys($xoops_admin_menu_ft) ;
     foreach ($mids as $mid) {
-        $module =& $module_handler->get($mid) ;
+        $module = $module_handler->get($mid) ;
         $xoops_admin_menu_ft[$mid] = preg_replace('/\<img src\=.*$/', $module->getVar('name').'</a>', $xoops_admin_menu_ft[$mid]) ;
         $xoops_admin_menu_ft[$mid] = '<div style="text-align:'._GLOBAL_LEFT.';background-color:#CCC;" title="'.$module->getVar('dirname').'">'.$xoops_admin_menu_ft[$mid].'</div>' ;
         $xoops_admin_menu_ml[$mid] = str_replace(',105);', ',45);', $xoops_admin_menu_ml[$mid]) ;
@@ -236,10 +236,10 @@ function altsys_adminmenu_hack_ft_xcsty_x20()
         }
     }
 
-    $module_handler =& xoops_gethandler('module') ;
+    $module_handler = xoops_getHandler('module') ;
     $mids = array_keys($xoops_admin_menu_ft) ;
     foreach ($mids as $mid) {
-        $module =& $module_handler->get($mid) ;
+        $module = $module_handler->get($mid) ;
         $submenuitems = array() ;
         if (preg_match('/popUpL\d+/', $xoops_admin_menu_ft[$mid], $regs)) {
             $popup = $regs[0] ;
@@ -307,7 +307,7 @@ function altsys_adminmenu_save_x20($xoops_admin_vars)
 
 if( is_object( @$GLOBALS["xoopsModule"] ) && empty( $not_inside_cp_functions ) ) {
 	$mid_tmp = $GLOBALS["xoopsModule"]->getVar("mid") ;
-	if( $mid_tmp == 1 && @$_GET["fct"] == "preferences" && @$_GET["op"] == "showmod" && ! empty( $_GET["mod"] ) ) $mid_tmp = intval( $_GET["mod"] ) ;
+	if( $mid_tmp == 1 && @$_GET["fct"] == "preferences" && @$_GET["op"] == "showmod" && ! empty( $_GET["mod"] ) ) $mid_tmp = (int)$_GET["mod"];
 	$xoops_admin_menu_ft[ $mid_tmp ] = str_replace( array( "background-color:#CCC;" , "display:none;" ) , array( "background-color:#AAA;" , "display:block;" ) , $xoops_admin_menu_ft[ $mid_tmp ] ) ;
 	if( $GLOBALS["xoopsModule"]->getInfo("version") > $GLOBALS["xoopsModule"]->getVar("version") / 100.0 + 0.0001 ) {
 		$xoops_admin_menu_ft[ $mid_tmp ] = str_replace( "class=\"version\" style=\"\"" , "class=\"version\" style=\"color:red;\"" , $xoops_admin_menu_ft[ $mid_tmp ] ) ;

@@ -3,7 +3,6 @@
 
 class MyBlocksAdmin
 {
-
     public $db ;
     public $lang ;
     public $cachetime_options = array() ;
@@ -22,7 +21,7 @@ class MyBlocksAdmin
 
     public function construct()
     {
-        $this->db =& XoopsDatabaseFactory::getDatabaseConnection() ;
+        $this->db = XoopsDatabaseFactory::getDatabaseConnection() ;
         $this->lang = @$GLOBALS['xoopsConfig']['language'] ;
 
         $this->cachetime_options = array(
@@ -36,14 +35,14 @@ class MyBlocksAdmin
         86400 => _DAY ,
         259200 => sprintf(_DAYS, 3) ,
         604800 => _WEEK ,
-        2592000 => _MONTH ,
+        2592000 => _MONTH
     );
 
         $this->ctype_options = array(
         'H' => _MD_A_MYBLOCKSADMIN_CTYPE_HTML ,
         'T' => _MD_A_MYBLOCKSADMIN_CTYPE_NOSMILE ,
         'S' => _MD_A_MYBLOCKSADMIN_CTYPE_SMILE ,
-        'P' => _MD_A_MYBLOCKSADMIN_CTYPE_PHP ,
+        'P' => _MD_A_MYBLOCKSADMIN_CTYPE_PHP
     ) ;
 
         $this->type_options = array(
@@ -51,7 +50,7 @@ class MyBlocksAdmin
         'E' => 'cloned custom block' ,
         'M' => 'module\'s block' ,
         'D' => 'cloned module\'s block' ,
-        'S' => 'system block' ,
+        'S' => 'system block'
     ) ;
     }
 
@@ -72,9 +71,9 @@ public static function &getInstance()
 public function checkPermission()
 {
     // only groups have 'module_admin' of 'altsys' can do that.
-    $module_handler =& xoops_gethandler('module') ;
-    $module =& $module_handler->getByDirname('altsys') ;
-    $moduleperm_handler =& xoops_gethandler('groupperm') ;
+    $module_handler = xoops_getHandler('module') ;
+    $module = $module_handler->getByDirname('altsys') ;
+    $moduleperm_handler = xoops_getHandler('groupperm') ;
     if (! is_object(@$GLOBALS['xoopsUser']) || ! $moduleperm_handler->checkRight('module_admin', $module->getVar('mid'), $GLOBALS['xoopsUser']->getGroups())) {
         die('only admin of altsys can access this area') ;
     }
@@ -86,20 +85,20 @@ public function checkPermission()
         // altsys "module" MODE
     if ($xoopsModule->getVar('dirname') == 'altsys') {
         // set target_module if specified by $_GET['dirname']
-        $module_handler =& xoops_gethandler('module');
+        $module_handler = xoops_getHandler('module');
         if (! empty($_GET['dirname'])) {
             $dirname = preg_replace('/[^0-9a-zA-Z_-]/', '', $_GET['dirname']) ;
-            $target_module =& $module_handler->getByDirname($dirname) ;
+            $target_module = $module_handler->getByDirname($dirname) ;
         }
 
         if (is_object(@$target_module)) {
             // module's blocks
             $this->target_mid = $target_module->getVar('mid') ;
-            $this->target_mname = $target_module->getVar('name') . "&nbsp;" . sprintf("(%2.2f)", $target_module->getVar('version') / 100.0) ;
+            $this->target_mname = $target_module->getVar('name') . '&nbsp;' . sprintf('(%2.2f)', $target_module->getVar('version') / 100.0) ;
             $this->target_dirname = $target_module->getVar('dirname') ;
             $modinfo = $target_module->getInfo() ;
             // breadcrumbs
-            $breadcrumbsObj =& AltsysBreadcrumbs::getInstance() ;
+            $breadcrumbsObj = AltsysBreadcrumbs::getInstance() ;
             $breadcrumbsObj->appendPath(XOOPS_URL.'/modules/altsys/admin/index.php?mode=admin&amp;lib=altsys&amp;page=myblocksadmin', '_MI_ALTSYS_MENU_MYBLOCKSADMIN') ;
             $breadcrumbsObj->appendPath(XOOPS_URL.'/modules/altsys/admin/index.php?mode=admin&amp;lib=altsys&amp;page=myblocksadmin&amp;dirname='.$this->target_dirname, $this->target_mname) ;
         } else {
@@ -108,18 +107,18 @@ public function checkPermission()
             $this->target_mname = _MI_ALTSYS_MENU_CUSTOMBLOCKS ;
             $this->target_dirname = '__CustomBlocks__' ;
             // breadcrumbs
-            $breadcrumbsObj =& AltsysBreadcrumbs::getInstance() ;
+            $breadcrumbsObj = AltsysBreadcrumbs::getInstance() ;
             $breadcrumbsObj->appendPath(XOOPS_URL.'/modules/altsys/admin/index.php?mode=admin&amp;lib=altsys&amp;page=myblocksadmin', '_MI_ALTSYS_MENU_MYBLOCKSADMIN') ;
             $breadcrumbsObj->appendPath(XOOPS_URL.'/modules/altsys/admin/index.php?mode=admin&amp;lib=altsys&amp;page=myblocksadmin&amp;dirname='.$this->target_dirname, '_MI_ALTSYS_MENU_CUSTOMBLOCKS') ;
         }
     } else {
         // myblocksadmin as a library
         $this->target_mid = $xoopsModule->getVar('mid') ;
-        $this->target_mname = $xoopsModule->getVar('name') . "&nbsp;" . sprintf("(%2.2f)", $xoopsModule->getVar('version') / 100.0) ;
+        $this->target_mname = $xoopsModule->getVar('name') . '&nbsp;' . sprintf('(%2.2f)', $xoopsModule->getVar('version') / 100.0) ;
         $this->target_dirname = $xoopsModule->getVar('dirname') ;
         $mod_url = XOOPS_URL.'/modules/'.$xoopsModule->getVar('dirname') ;
         $modinfo = $xoopsModule->getInfo() ;
-        $breadcrumbsObj =& AltsysBreadcrumbs::getInstance() ;
+        $breadcrumbsObj = AltsysBreadcrumbs::getInstance() ;
         $breadcrumbsObj->appendPath($mod_url.'/'.@$modinfo['adminindex'], $this->target_mname) ;
         $breadcrumbsObj->appendPath($mod_url.'/admin/index.php?mode=admin&amp;lib=altsys&amp;page=myblocksadmin', _MD_A_MYBLOCKSADMIN_BLOCKADMIN) ;
     }
@@ -140,7 +139,7 @@ public function canEdit($block)
 public function canDelete($block)
 {
     // can delete if it is a cloned block
-    if ($block->getVar("block_type") == 'D' || $block->getVar("block_type") == 'C') {
+    if ($block->getVar('block_type') == 'D' || $block->getVar('block_type') == 'C') {
         return true ;
     } else {
         return false ;
@@ -155,12 +154,12 @@ public function canDelete($block)
 public function canClone($block)
 {
     // can clone link if it is marked as cloneable block
-    if ($block->getVar("block_type") == 'D' || $block->getVar("block_type") == 'C') {
+    if ($block->getVar('block_type') == 'D' || $block->getVar('block_type') == 'C') {
         return 2 ;
     } else {
         // $modversion['blocks'][n]['can_clone']
         foreach ($this->block_configs as $bconf) {
-            if ($block->getVar("show_func") == @$bconf['show_func'] && $block->getVar("func_file") == @$bconf['file'] && (empty($bconf['template']) || $block->getVar("template") == @$bconf['template'])) {
+            if ($block->getVar('show_func') == @$bconf['show_func'] && $block->getVar('func_file') == @$bconf['file'] && (empty($bconf['template']) || $block->getVar('template') == @$bconf['template'])) {
                 if (! empty($bconf['can_clone'])) {
                     return 2 ;
                 }
@@ -180,12 +179,12 @@ public function canClone($block)
 // options
 public function renderCell4BlockOptions($block_data)
 {
-    $bid = intval($block_data['bid']) ;
+    $bid = (int)$block_data['bid'];
 
 //HACK by domifara
     if (defined('XOOPS_CUBE_LEGACY')) {
-        $handler =& xoops_gethandler('block');
-        $block =& $handler->create(false) ;
+        $handler = xoops_getHandler('block');
+        $block = $handler->create(false) ;
         $block->load($bid) ;
     } else {
         $block = new XoopsBlock($bid) ;
@@ -198,7 +197,7 @@ public function renderCell4BlockOptions($block_data)
 // link blocks - modules
 public function renderCell4BlockModuleLink($block_data)
 {
-    $bid = intval($block_data['bid']) ;
+    $bid = (int)$block_data['bid'];
 
     // get selected targets
     if (is_array(@$block_data['bmodule'])) {
@@ -206,10 +205,10 @@ public function renderCell4BlockModuleLink($block_data)
         $selected_mids = $block_data['bmodule'] ;
     } else {
         // origined from the table of `block_module_link`
-        $result = $this->db->query("SELECT module_id FROM ".$this->db->prefix('block_module_link')." WHERE block_id='$bid'") ;
+        $result = $this->db->query('SELECT module_id FROM ' . $this->db->prefix('block_module_link') . " WHERE block_id='$bid'") ;
         $selected_mids = array();
         while (list($selected_mid) = $this->db->fetchRow($result)) {
-            $selected_mids[] = intval($selected_mid) ;
+            $selected_mids[] = (int)$selected_mid;
         }
         if (empty($selected_mids)) {
             $selected_mids = array( 0 ) ;
@@ -217,7 +216,7 @@ public function renderCell4BlockModuleLink($block_data)
     }
 
     // get all targets
-    $module_handler =& xoops_gethandler('module');
+    $module_handler = xoops_getHandler('module');
     $criteria = new CriteriaCompo(new Criteria('hasmain', 1));
     $criteria->add(new Criteria('isactive', 1));
     $module_list = $module_handler->getList($criteria);
@@ -247,7 +246,7 @@ public function renderCell4BlockModuleLink($block_data)
 // group_permission - 'block_read'
 public function renderCell4BlockReadGroupPerm($block_data)
 {
-    $bid = intval($block_data['bid']) ;
+    $bid = (int)$block_data['bid'];
 
     // get selected targets
     if (is_array(@$block_data['bgroup'])) {
@@ -255,10 +254,10 @@ public function renderCell4BlockReadGroupPerm($block_data)
         $selected_gids = $block_data['bgroup'] ;
     } else {
         // origined from the table of `group_perm`
-        $result = $this->db->query("SELECT gperm_groupid FROM ".$this->db->prefix('group_permission')." WHERE gperm_itemid='$bid' AND gperm_name='block_read'") ;
+        $result = $this->db->query('SELECT gperm_groupid FROM ' . $this->db->prefix('group_permission') . " WHERE gperm_itemid='$bid' AND gperm_name='block_read'") ;
         $selected_gids = array();
         while (list($selected_gid) = $this->db->fetchRow($result)) {
-            $selected_gids[] = intval($selected_gid) ;
+            $selected_gids[] = (int)$selected_gid;
         }
         if ($bid == 0 && empty($selected_gids)) {
             $selected_gids = $GLOBALS['xoopsUser']->getGroups() ;
@@ -266,7 +265,7 @@ public function renderCell4BlockReadGroupPerm($block_data)
     }
 
     // get all targets
-    $group_handler =& xoops_gethandler('group');
+    $group_handler = xoops_getHandler('group');
     $groups = $group_handler->getObjects() ;
 
     // build options
@@ -294,43 +293,43 @@ public function renderCell4BlockReadGroupPerm($block_data)
 // visible and side
 public function renderCell4BlockPosition($block_data)
 {
-    $bid = intval($block_data['bid']) ;
-    $side = intval($block_data['side']) ;
-    $visible = intval($block_data['visible']) ;
+    $bid = (int)$block_data['bid'];
+    $side = (int)$block_data['side'];
+    $visible = (int)$block_data['visible'];
 
-    $sseln = $ssel0 = $ssel1 = $ssel2 = $ssel3 = $ssel4 = "";
-    $scoln = $scol0 = $scol1 = $scol2 = $scol3 = $scol4 = "unselected";
-    $stextbox = "unselected" ;
+    $sseln = $ssel0 = $ssel1 = $ssel2 = $ssel3 = $ssel4 = '';
+    $scoln = $scol0 = $scol1 = $scol2 = $scol3 = $scol4 = 'unselected';
+    $stextbox = 'unselected';
     $value4extra_side = '' ;
 
     if ($visible != 1) {
         $sseln = " checked='checked'";
-        $scoln = "disabled";
+        $scoln = 'disabled';
     } else {
         switch ($side) {
-        case XOOPS_SIDEBLOCK_LEFT :
+        case XOOPS_SIDEBLOCK_LEFT:
             $ssel0 = " checked='checked'";
-            $scol0 = "selected";
+            $scol0 = 'selected';
             break ;
-        case XOOPS_SIDEBLOCK_RIGHT :
+        case XOOPS_SIDEBLOCK_RIGHT:
             $ssel1 = " checked='checked'";
-            $scol1 = "selected";
+            $scol1 = 'selected';
             break ;
-        case XOOPS_CENTERBLOCK_LEFT :
+        case XOOPS_CENTERBLOCK_LEFT:
             $ssel2 = " checked='checked'";
-            $scol2 = "selected";
+            $scol2 = 'selected';
             break ;
-        case XOOPS_CENTERBLOCK_RIGHT :
+        case XOOPS_CENTERBLOCK_RIGHT:
             $ssel4 = " checked='checked'";
-            $scol4 = "selected";
+            $scol4 = 'selected';
             break ;
-        case XOOPS_CENTERBLOCK_CENTER :
+        case XOOPS_CENTERBLOCK_CENTER:
             $ssel3 = " checked='checked'";
-            $scol3 = "selected";
+            $scol3 = 'selected';
             break ;
-        default :
+        default:
             $value4extra_side = $side ;
-            $stextbox = "selected" ;
+            $stextbox = 'selected';
             break ;
     }
     }
@@ -361,8 +360,8 @@ public function renderCell4BlockPosition($block_data)
 				<div class='blockposition $scoln'>
 					<input type='radio' name='sides[$bid]' value='-1' class='blockposition' $sseln onclick='document.getElementById(\"extra_side_$bid\").value=-1;' />
 				</div>
-				<div style='float:"._GLOBAL_LEFT.";'>"._NONE."</div>
-	" ;
+                <div style='float:"._GLOBAL_LEFT.";'>"._NONE . '</div>
+    ';
 }
 
 
@@ -372,18 +371,18 @@ public function list_blocks()
     global $xoopsGTicket ;
 
     // main query
-    $sql = "SELECT * FROM ".$this->db->prefix("newblocks")." WHERE mid='$this->target_mid' ORDER BY visible DESC,side,weight" ;
+    $sql = 'SELECT * FROM ' . $this->db->prefix('newblocks') . " WHERE mid='$this->target_mid' ORDER BY visible DESC,side,weight" ;
     $result = $this->db->query($sql) ;
     $block_arr = array() ;
 //HACK by domifara
     if (defined('XOOPS_CUBE_LEGACY')) {
-        $handler =& xoops_gethandler('block');//add
+        $handler = xoops_getHandler('block');//add
     }
     while ($myrow = $this->db->fetchArray($result)) {
 
 //HACK by domifara
         if (defined('XOOPS_CUBE_LEGACY')) {
-            $block_one =& $handler->create(false) ;
+            $block_one = $handler->create(false) ;
             $block_one->assignVars($myrow);
             $block_arr[] =& $block_one ;
         } else {
@@ -398,23 +397,23 @@ public function list_blocks()
     $blocks4assign = array() ;
     foreach ($block_arr as $i => $block) {
         $block_data = array(
-            'bid' => intval($block->getVar('bid')) ,
+            'bid' => (int)$block->getVar('bid'),
             'name' => $block->getVar('name', 'n') ,
             'title' => $block->getVar('title', 'n') ,
-            'weight' => intval($block->getVar('weight')) ,
-            'bcachetime' => intval($block->getVar('bcachetime')) ,
-            'side' => intval($block->getVar('side')) ,
-            'visible' => intval($block->getVar('visible')) ,
+            'weight' => (int)$block->getVar('weight'),
+            'bcachetime' => (int)$block->getVar('bcachetime'),
+            'side' => (int)$block->getVar('side'),
+            'visible' => (int)$block->getVar('visible'),
             'can_edit' => $this->canEdit($block) ,
             'can_delete' => $this->canDelete($block) ,
-            'can_clone' => $this->canClone($block) ,
+            'can_clone' => $this->canClone($block)
         ) ;
         $blocks4assign[] = array(
             'name_raw' => $block_data['name'] ,
             'title_raw' => $block_data['title'] ,
             'cell_position' => $this->renderCell4BlockPosition($block_data) ,
             'cell_module_link' =>  $this->renderCell4BlockModuleLink($block_data) ,
-            'cell_group_perm' =>  $this->renderCell4BlockReadGroupPerm($block_data) ,
+            'cell_group_perm' =>  $this->renderCell4BlockReadGroupPerm($block_data)
         ) + $block_data ;
     }
 
@@ -428,7 +427,7 @@ public function list_blocks()
         'language' => $this->lang,
         'cachetime_options' => $this->cachetime_options,
         'blocks' => $blocks4assign,
-        'gticket_hidden' => $xoopsGTicket->getTicketHtml(__LINE__, 1800, 'myblocksadmin'),
+        'gticket_hidden' => $xoopsGTicket->getTicketHtml(__LINE__, 1800, 'myblocksadmin')
     )) ;
     $tpl->display('db:altsys_main_myblocksadmin_list.html') ;
 }
@@ -452,17 +451,17 @@ public function list_blocks()
     public function list_groups()
     {
         // query for getting blocks
-    $sql = "SELECT * FROM ".$this->db->prefix("newblocks")." WHERE mid='$this->target_mid' ORDER BY visible DESC,side,weight" ;
+    $sql = 'SELECT * FROM ' . $this->db->prefix('newblocks') . " WHERE mid='$this->target_mid' ORDER BY visible DESC,side,weight" ;
         $result = $this->db->query($sql) ;
         $block_arr = array() ;
 //HACK by domifara
     if (defined('XOOPS_CUBE_LEGACY')) {
-        $handler =& xoops_gethandler('block');//add
+        $handler = xoops_getHandler('block');//add
     }
         while ($myrow = $this->db->fetchArray($result)) {
             //HACK by domifara
         if (defined('XOOPS_CUBE_LEGACY')) {
-            $block_one =& $handler->create(false) ;
+            $block_one = $handler->create(false) ;
             $block_one->assignVars($myrow);
             $block_arr[] =& $block_one ;
         } else {
@@ -472,7 +471,7 @@ public function list_blocks()
 
         $item_list = array() ;
         foreach (array_keys($block_arr) as $i) {
-            $item_list[ $block_arr[$i]->getVar("bid") ] = $block_arr[$i]->getVar("title") ;
+            $item_list[ $block_arr[$i]->getVar('bid') ] = $block_arr[$i]->getVar('title') ;
         }
 
         $form = new MyXoopsGroupPermForm(_MD_A_MYBLOCKSADMIN_PERMFORM, 1, 'block_read', '') ;
@@ -494,8 +493,8 @@ public function list_blocks()
 
 //HACK by domifara
     if (defined('XOOPS_CUBE_LEGACY')) {
-        $handler =& xoops_gethandler('block');
-        $block =& $handler->create(false) ;
+        $handler = xoops_getHandler('block');
+        $block = $handler->create(false) ;
         $block->load($bid) ;
     } else {
         $block = new XoopsBlock($bid);
@@ -549,13 +548,13 @@ public function list_blocks()
 // virtual
 public function updateBlockModuleLink($bid, $bmodules)
 {
-    $bid = intval($bid) ;
-    $table = $this->db->prefix("block_module_link") ;
+    $bid = (int)$bid;
+    $table = $this->db->prefix('block_module_link') ;
 
     $sql = "DELETE FROM `$table` WHERE `block_id`=$bid" ;
     $this->db->query($sql) ;
     foreach ($bmodules as $mid) {
-        $mid = intval($mid) ;
+        $mid = (int)$mid;
         $sql = "INSERT INTO `$table` (`block_id`,`module_id`) VALUES ($bid,$mid)" ;
         $this->db->query($sql) ;
     }
@@ -565,8 +564,8 @@ public function updateBlockModuleLink($bid, $bmodules)
 // virtual
 public function updateBlockReadGroupPerm($bid, $req_gids)
 {
-    $bid = intval($bid) ;
-    $table = $this->db->prefix("group_permission") ;
+    $bid = (int)$bid;
+    $table = $this->db->prefix('group_permission') ;
     $req_gids = array_map('intval', $req_gids) ;
     sort($req_gids) ;
 
@@ -588,7 +587,7 @@ public function updateBlockReadGroupPerm($bid, $req_gids)
     $sql = "DELETE FROM `$table` WHERE gperm_name='block_read' AND `gperm_itemid`=$bid" ;
     $this->db->query($sql) ;
     foreach ($req_gids as $gid) {
-        $gid = intval($gid) ;
+        $gid = (int)$gid;
         $sql = "INSERT INTO `$table` (`gperm_groupid`,`gperm_itemid`,`gperm_modid`,`gperm_name`) VALUES ($gid,$bid,1,'block_read')" ;
         $this->db->query($sql) ;
     }
@@ -616,11 +615,11 @@ public function updateBlockReadGroupPerm($bid, $req_gids)
 
     public function fetchRequest4Block($bid)
     {
-        $bid = intval($bid) ;
-        (method_exists('MyTextSanitizer', 'sGetInstance') and $myts =& MyTextSanitizer::sGetInstance()) || $myts =& MyTextSanitizer::getInstance() ;
+        $bid = (int)$bid;
+        (method_exists('MyTextSanitizer', 'sGetInstance') and $myts = MyTextSanitizer::sGetInstance()) || $myts = MyTextSanitizer::getInstance() ;
 
         if (@$_POST['extra_sides'][$bid] > 0) {
-            $_POST['sides'][$bid] = intval($_POST['extra_sides'][$bid]) ;
+            $_POST['sides'][$bid] = (int)$_POST['extra_sides'][$bid];
         }
 
         if (@$_POST['sides'][$bid] < 0) {
@@ -632,28 +631,28 @@ public function updateBlockReadGroupPerm($bid, $req_gids)
 
         return array(
         'bid' => $bid ,
-        'side' => intval(@$_POST['sides'][$bid]) ,
-        'weight' => intval(@$_POST['weights'][$bid]) ,
+            'side' => (int)(@$_POST['sides'][$bid]),
+            'weight' => (int)(@$_POST['weights'][$bid]),
         'visible' => $visible ,
         'title' => $myts->stripSlashesGPC(@$_POST['titles'][$bid]) ,
         'content' => $myts->stripSlashesGPC(@$_POST['contents'][$bid]) ,
         'ctype' => preg_replace('/[^A-Z]/', '', @$_POST['ctypes'][$bid]) ,
-        'bcachetime' => intval(@$_POST['bcachetimes'][$bid]) ,
+            'bcachetime' => (int)(@$_POST['bcachetimes'][$bid]),
         'bmodule' => is_array(@$_POST['bmodules'][$bid]) ? $_POST['bmodules'][$bid] : array( 0 ) ,
         'bgroup' => is_array(@$_POST['bgroups'][$bid]) ? $_POST['bgroups'][$bid] : array() ,
-        'options' => is_array(@$_POST['options'][$bid]) ? $_POST['options'][$bid] : array() ,
+        'options' => is_array(@$_POST['options'][$bid]) ? $_POST['options'][$bid] : array()
     ) ;
     }
 
 
     public function do_delete($bid)
     {
-        $bid = intval($bid) ;
+        $bid = (int)$bid;
 
 //HACK by domifara
     if (defined('XOOPS_CUBE_LEGACY')) {
-        $handler =& xoops_gethandler('block');
-        $block =& $handler->create(false) ;
+        $handler = xoops_getHandler('block');
+        $block = $handler->create(false) ;
         $block->load($bid) ;
     } else {
         $block = new XoopsBlock($bid) ;
@@ -673,21 +672,21 @@ public function updateBlockReadGroupPerm($bid, $req_gids)
 //HACK add by domifara
 public function do_deleteBlockReadGroupPerm($bid)
 {
-    $bid = intval($bid) ;
-    $table = $this->db->prefix("group_permission") ;
+    $bid = (int)$bid;
+    $table = $this->db->prefix('group_permission') ;
     $sql = "DELETE FROM `$table` WHERE gperm_name='block_read' AND `gperm_itemid`=$bid" ;
     $this->db->query($sql) ;
 }
 
     public function form_delete($bid)
     {
-        $bid = intval($bid) ;
+        $bid = (int)$bid;
 
 //HACK by domifara
 //HACK by domifara
     if (defined('XOOPS_CUBE_LEGACY')) {
-        $handler =& xoops_gethandler('block');
-        $block =& $handler->create(false) ;
+        $handler = xoops_getHandler('block');
+        $block = $handler->create(false) ;
         $block->load($bid) ;
     } else {
         $block = new XoopsBlock($bid) ;
@@ -701,7 +700,7 @@ public function do_deleteBlockReadGroupPerm($bid)
         }
 
     // breadcrumbs
-    $breadcrumbsObj =& AltsysBreadcrumbs::getInstance() ;
+    $breadcrumbsObj = AltsysBreadcrumbs::getInstance() ;
         $breadcrumbsObj->appendPath('', _DELETE) ;
 
         xoops_confirm(array( 'op' => 'delete_ok' ) + $GLOBALS['xoopsGTicket']->getTicketArray(__LINE__, 1800, 'myblocksadmin'), "?mode=admin&amp;lib=altsys&amp;page=myblocksadmin&amp;dirname=$this->target_dirname&amp;bid=$bid", sprintf(_MD_A_MYBLOCKSADMIN_FMT_REMOVEBLOCK, $block->getVar('title'))) ;
@@ -710,14 +709,14 @@ public function do_deleteBlockReadGroupPerm($bid)
 
     public function do_clone($bid)
     {
-        $bid = intval($bid) ;
+        $bid = (int)$bid;
 
         $request = $this->fetchRequest4Block($bid) ;
 
 //HACK by domifara
     if (defined('XOOPS_CUBE_LEGACY')) {
-        $handler =& xoops_gethandler('block');
-        $block =& $handler->create(false) ;
+        $handler = xoops_getHandler('block');
+        $block = $handler->create(false) ;
         $block->load($bid) ;
     } else {
         $block = new XoopsBlock($bid) ;
@@ -743,7 +742,7 @@ public function do_deleteBlockReadGroupPerm($bid)
 
 //HACK by domifara
     if (defined('XOOPS_CUBE_LEGACY')) {
-        $cblock =& $handler->create(false) ;
+        $cblock = $handler->create(false) ;
     } else {
         $cblock = new XoopsBlock() ;
     }
@@ -779,7 +778,7 @@ public function do_deleteBlockReadGroupPerm($bid)
         $func_num = 256 ;
         do {
             $func_num -- ;
-            list($count) = $this->db->fetchRow($this->db->query("SELECT COUNT(*) FROM ".$this->db->prefix("newblocks")." WHERE mid=".intval($mid)." AND func_num=".$func_num)) ;
+            list($count) = $this->db->fetchRow($this->db->query('SELECT COUNT(*) FROM ' . $this->db->prefix('newblocks') . ' WHERE mid=' . (int)$mid . ' AND func_num=' . $func_num)) ;
         } while ($count > 0) ;
 
         return $func_num > 128 ? $func_num : 255 ;
@@ -788,15 +787,15 @@ public function do_deleteBlockReadGroupPerm($bid)
 
     public function do_edit($bid)
     {
-        $bid = intval($bid) ;
+        $bid = (int)$bid;
 
         if ($bid <= 0) {
             // new custom block
 
 //HACK by domifara
     if (defined('XOOPS_CUBE_LEGACY')) {
-        $handler =& xoops_gethandler('block');
-        $new_block =& $handler->create(false) ;
+        $handler = xoops_getHandler('block');
+        $new_block = $handler->create(false) ;
     } else {
         $new_block = new XoopsBlock() ;
     }
@@ -809,7 +808,7 @@ public function do_deleteBlockReadGroupPerm($bid)
             $request = $this->fetchRequest4Block(0) ;
         // permission copy
         foreach ($GLOBALS['xoopsUser']->getGroups() as $gid) {
-            $sql = "INSERT INTO ".$this->db->prefix('group_permission')." (gperm_groupid, gperm_itemid, gperm_modid, gperm_name) VALUES ($gid, $bid, 1, 'block_read')";
+            $sql = 'INSERT INTO ' . $this->db->prefix('group_permission') . " (gperm_groupid, gperm_itemid, gperm_modid, gperm_name) VALUES ($gid, $bid, 1, 'block_read')";
             $this->db->query($sql);
         }
         } else {
@@ -831,12 +830,12 @@ public function do_deleteBlockReadGroupPerm($bid)
 
     public function form_edit($bid, $mode = 'edit')
     {
-        $bid = intval($bid) ;
+        $bid = (int)$bid;
 
 //HACK by domifara
     if (defined('XOOPS_CUBE_LEGACY')) {
-        $handler =& xoops_gethandler('block');
-        $block =& $handler->create(false) ;
+        $handler = xoops_getHandler('block');
+        $block = $handler->create(false) ;
         $block->load($bid) ;
     } else {
         $block = new XoopsBlock($bid) ;
@@ -851,40 +850,40 @@ public function do_deleteBlockReadGroupPerm($bid)
         }
 
         switch ($mode) {
-        case 'clone' :
+        case 'clone':
             $form_title = _MD_A_MYBLOCKSADMIN_CLONEFORM ;
             $button_value = _MD_A_MYBLOCKSADMIN_BTN_CLONE ;
             $next_op = 'clone_ok' ;
             // breadcrumbs
-            $breadcrumbsObj =& AltsysBreadcrumbs::getInstance() ;
+            $breadcrumbsObj = AltsysBreadcrumbs::getInstance() ;
             $breadcrumbsObj->appendPath('', _MD_A_MYBLOCKSADMIN_CLONEFORM) ;
             break ;
-        case 'new' :
+        case 'new':
             $form_title = _MD_A_MYBLOCKSADMIN_NEWFORM ;
             $button_value = _MD_A_MYBLOCKSADMIN_BTN_NEW ;
             $next_op = 'new_ok' ;
             // breadcrumbs
-            $breadcrumbsObj =& AltsysBreadcrumbs::getInstance() ;
+            $breadcrumbsObj = AltsysBreadcrumbs::getInstance() ;
             $breadcrumbsObj->appendPath('', _MD_A_MYBLOCKSADMIN_NEWFORM) ;
             break ;
-        case 'edit' :
-        default :
+        case 'edit':
+        default:
             $form_title = _MD_A_MYBLOCKSADMIN_EDITFORM ;
             $button_value = _MD_A_MYBLOCKSADMIN_BTN_EDIT ;
             $next_op = 'edit_ok' ;
             // breadcrumbs
-            $breadcrumbsObj =& AltsysBreadcrumbs::getInstance() ;
+            $breadcrumbsObj = AltsysBreadcrumbs::getInstance() ;
             $breadcrumbsObj->appendPath('', _MD_A_MYBLOCKSADMIN_EDITFORM) ;
             break ;
     }
 
         $is_custom = in_array($block->getVar('block_type'), array( 'C', 'E' )) ? true : false ;
-        $block_template = $block->getVar('template', 'n') ;
+        $block_template =& $block->getVar('template', 'n') ;
         $block_template_tplset = '' ;
 
         if (! $is_custom && $block_template) {
             // find template of the block
-        $tplfile_handler =& xoops_gethandler('tplfile');
+        $tplfile_handler = xoops_getHandler('tplfile');
             $found_templates = $tplfile_handler->find($GLOBALS['xoopsConfig']['template_set'], 'block', null, null, $block_template) ;
             $block_template_tplset = count($found_templates) > 0 ? $GLOBALS['xoopsConfig']['template_set'] : 'default' ;
         }
@@ -898,17 +897,17 @@ public function do_deleteBlockReadGroupPerm($bid)
         'bid' => $bid ,
         'name' => $block->getVar('name', 'n') ,
         'title' => $block->getVar('title', 'n') ,
-        'weight' => intval($block->getVar('weight')) ,
-        'bcachetime' => intval($block->getVar('bcachetime')) ,
-        'side' => intval($block->getVar('side')) ,
-        'visible' => intval($block->getVar('visible')) ,
+            'weight' => (int)$block->getVar('weight'),
+            'bcachetime' => (int)$block->getVar('bcachetime'),
+            'side' => (int)$block->getVar('side'),
+            'visible' => (int)$block->getVar('visible'),
         'template' => $block_template ,
         'template_tplset' => $block_template_tplset ,
         'options' => $block->getVar('options') ,
         'content' => $block->getVar('content', 'n') ,
         'is_custom' => $is_custom ,
         'type' => $block->getVar('block_type') ,
-        'ctype' => $block->getVar('c_type') ,
+        'ctype' => $block->getVar('c_type')
     ) ;
 
         $block4assign = array(
@@ -919,7 +918,7 @@ public function do_deleteBlockReadGroupPerm($bid)
         'cell_module_link' => $this->renderCell4BlockModuleLink($block_data) ,
         'cell_group_perm' =>  $this->renderCell4BlockReadGroupPerm($block_data) ,
         'cell_options' => $this->renderCell4BlockOptions($block_data) ,
-        'content_preview' => $this->previewContent($block_data) ,
+        'content_preview' => $this->previewContent($block_data)
     ) + $block_data ;
 
     // display
@@ -945,7 +944,7 @@ public function do_deleteBlockReadGroupPerm($bid)
         'form_title' => $form_title,
         'submit_button' => $button_value,
         'common_fck_installed' => $this->checkFck(),
-        'gticket_hidden' => $GLOBALS['xoopsGTicket']->getTicketHtml(__LINE__, 1800, 'myblocksadmin'),
+        'gticket_hidden' => $GLOBALS['xoopsGTicket']->getTicketHtml(__LINE__, 1800, 'myblocksadmin')
     )) ;
 
         if (defined('XOOPS_CUBE_LEGACY')) {
@@ -963,7 +962,7 @@ public function do_deleteBlockReadGroupPerm($bid)
 
     public function previewContent($block_data)
     {
-        $bid = intval($block_data['bid']) ;
+        $bid = (int)$block_data['bid'];
 
         if (! $block_data['is_custom']) {
             return '' ;
@@ -976,7 +975,7 @@ public function do_deleteBlockReadGroupPerm($bid)
 //TODO : need no hook block at this
     $block = new XoopsBlock($bid) ;
 /*
-    $handler =& xoops_gethandler('block');
+    $handler = xoops_gethandler('block');
     $block =& $handler->create(false) ;
     $block->load($bid) ;
 */
@@ -990,7 +989,7 @@ public function do_deleteBlockReadGroupPerm($bid)
 
         restore_error_handler() ;
         $original_level = error_reporting(E_ALL) ;
-        $ret = $block->getContent('S', $block_data['ctype']) ;
+        $ret =& $block->getContent('S', $block_data['ctype']) ;
         error_reporting($original_level) ;
 
         return $ret ;
@@ -1003,7 +1002,7 @@ public function do_deleteBlockReadGroupPerm($bid)
         'H' => _MD_A_MYBLOCKSADMIN_CTYPE_HTML ,
         'S' => _MD_A_MYBLOCKSADMIN_CTYPE_SMILE ,
         'N' => _MD_A_MYBLOCKSADMIN_CTYPE_NOSMILE ,
-        'P' => _MD_A_MYBLOCKSADMIN_CTYPE_PHP ,
+        'P' => _MD_A_MYBLOCKSADMIN_CTYPE_PHP
     ) ;
 
         return isset($ctypes[$bctype]) ? $ctypes[$bctype] : _MD_A_MYBLOCKSADMIN_CTYPE_SMILE ;
@@ -1018,7 +1017,7 @@ public function do_deleteBlockReadGroupPerm($bid)
     }
 
         $msg = '' ;
-        $bid = intval(@$_GET['bid']) ;
+        $bid = (int)(@$_GET['bid']);
         if (! empty($_POST['preview'])) {
             // preview
         $this->preview_request = $this->fetchRequest4Block($bid) ;
@@ -1038,7 +1037,7 @@ public function do_deleteBlockReadGroupPerm($bid)
         $msg = $this->do_edit($bid) ;
         } elseif (! empty($_POST['submit'])) {
             // update module_admin,module_read,block_read
-        include dirname(dirname(__FILE__)).'/include/mygroupperm.php' ;
+        include dirname(__DIR__).'/include/mygroupperm.php' ;
             $msg = _MD_A_MYBLOCKSADMIN_PERMUPDATED ;
         }
 
@@ -1049,20 +1048,20 @@ public function do_deleteBlockReadGroupPerm($bid)
 
     public function processGet()
     {
-        $bid = intval(@$_GET['bid']) ;
+        $bid = (int)(@$_GET['bid']);
         switch (@$_GET['op']) {
-        case 'clone' :
+        case 'clone':
             $this->form_edit($bid, 'clone') ;
             break ;
-        case 'new' :
-        case 'edit' :
+        case 'new':
+        case 'edit':
             $this->form_edit($bid, 'edit') ;
             break ;
-        case 'delete' :
+        case 'delete':
             $this->form_delete($bid) ;
             break ;
-        case 'list' :
-        default :
+        case 'list':
+        default:
             // the first form (blocks)
             $this->list_blocks() ;
             // the second form (groups)

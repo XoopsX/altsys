@@ -5,9 +5,9 @@
 //                     GIJOE <http://www.peak.ne.jp/>                        //
 // ------------------------------------------------------------------------- //
 
-require_once dirname(__FILE__).'/class/AltsysBreadcrumbs.class.php' ;
-include_once dirname(__FILE__).'/include/gtickets.php' ;
-include_once dirname(__FILE__).'/include/altsys_functions.php' ;
+require_once __DIR__.'/class/AltsysBreadcrumbs.class.php' ;
+include_once __DIR__.'/include/gtickets.php' ;
+include_once __DIR__.'/include/altsys_functions.php' ;
 
 // check access right (needs module_admin of this module)
 if (! is_object($xoopsUser) || ! is_object($xoopsModule) || ! $xoopsUser->isAdmin($xoopsModule->mid())) {
@@ -16,8 +16,8 @@ if (! is_object($xoopsUser) || ! is_object($xoopsModule) || ! $xoopsUser->isAdmi
 
 
 // initials
-$db =& XoopsDatabaseFactory::getDatabaseConnection();
-(method_exists('MyTextSanitizer', 'sGetInstance') and $myts =& MyTextSanitizer::sGetInstance()) || $myts =& MyTextSanitizer::getInstance() ;
+$db = XoopsDatabaseFactory::getDatabaseConnection();
+(method_exists('MyTextSanitizer', 'sGetInstance') and $myts = MyTextSanitizer::sGetInstance()) || $myts = MyTextSanitizer::getInstance() ;
 
 // language file
 altsys_include_language_file('mypreferences') ;
@@ -26,17 +26,17 @@ altsys_include_language_file('mypreferences') ;
 $op = empty($_GET['op']) ? 'showmod' : preg_replace('/[^a-zA-Z0-9_-]/', '', $_GET['op']) ;
 
 if ($op == 'showmod') {
-    $config_handler =& xoops_gethandler('config');
+    $config_handler = xoops_getHandler('config');
     $mod = $xoopsModule->mid() ;
-    $config =& $config_handler->getConfigs(new Criteria('conf_modid', $mod));
+    $config = $config_handler->getConfigs(new Criteria('conf_modid', $mod));
     $count = count($config);
     if ($count < 1) {
         die('no configs') ;
     }
     include_once XOOPS_ROOT_PATH.'/class/xoopsformloader.php';
     $form = new XoopsThemeForm(_MD_A_MYPREFERENCES_FORMTITLE, 'pref_form', 'index.php?mode=admin&lib=altsys&page=mypreferences&op=save');
-    $module_handler =& xoops_gethandler('module');
-    $module =& $module_handler->get($mod);
+    $module_handler = xoops_getHandler('module');
+    $module = $module_handler->get($mod);
 
     // language
     $language = empty($xoopsConfig['language']) ? 'english' : $xoopsConfig['language'] ;
@@ -67,9 +67,9 @@ if ($op == 'showmod') {
     }
 
     $modname = $module->getVar('name');
-    $button_tray = new XoopsFormElementTray("");
+    $button_tray = new XoopsFormElementTray('');
     // if ($module->getInfo('adminindex')) {
-        //	$form->addElement(new XoopsFormHidden('redirect', XOOPS_URL.'/modules/'.$module->getVar('dirname').'/'.$module->getInfo('adminindex')));
+        //  $form->addElement(new XoopsFormHidden('redirect', XOOPS_URL.'/modules/'.$module->getVar('dirname').'/'.$module->getInfo('adminindex')));
     // }
     for ($i = 0; $i < $count; $i++) {
         $title_icon = ($config[$i]->getVar('conf_valuetype') === 'encrypt')? '<img src="'.XOOPS_MODULE_URL.'/legacy/admin/theme/icons/textfield_key.png" alt="Encrypted">' : ''; // support XCL 2.2.3 'encrypt' of 'conf_valuetype'
@@ -77,7 +77,7 @@ if ($op == 'showmod') {
         $title = '' ; // GIJ
         switch ($config[$i]->getVar('conf_formtype')) {
         case 'textarea':
-            (method_exists('MyTextSanitizer', 'sGetInstance') and $myts =& MyTextSanitizer::sGetInstance()) || $myts =& MyTextSanitizer::getInstance();
+            (method_exists('MyTextSanitizer', 'sGetInstance') and $myts = MyTextSanitizer::sGetInstance()) || $myts = MyTextSanitizer::getInstance();
             if ($config[$i]->getVar('conf_valuetype') == 'array') {
                 // this is exceptional.. only when value type is arrayneed a smarter way for this
                 $ele = ($config[$i]->getVar('conf_value') != '') ? new XoopsFormTextArea($title, $config[$i]->getVar('conf_name'), $myts->htmlspecialchars(implode('|', $config[$i]->getConfValueForOutput())), 5, 50) : new XoopsFormTextArea($title, $config[$i]->getVar('conf_name'), '', 5, 50);
@@ -94,7 +94,7 @@ if ($op == 'showmod') {
                 $ele = new XoopsFormRadio($title, $config[$i]->getVar('conf_name'), $config[$i]->getConfValueForOutput());
                 $addBr = '<br />';
             }
-            $options =& $config_handler->getConfigOptions(new Criteria('conf_id', $config[$i]->getVar('conf_id')));
+            $options = $config_handler->getConfigOptions(new Criteria('conf_id', $config[$i]->getVar('conf_id')));
             $opcount = count($options);
             for ($j = 0; $j < $opcount; $j++) {
                 $optval = defined($options[$j]->getVar('confop_value')) ? constant($options[$j]->getVar('confop_value')) : $options[$j]->getVar('confop_value');
@@ -111,12 +111,12 @@ if ($op == 'showmod') {
                 $ele = new XoopsFormCheckBox($title, $config[$i]->getVar('conf_name'), $config[$i]->getConfValueForOutput());
                 $addBr = '<br />';
             }
-            $options =& $config_handler->getConfigOptions(new Criteria('conf_id', $config[$i]->getVar('conf_id')));
+            $options = $config_handler->getConfigOptions(new Criteria('conf_id', $config[$i]->getVar('conf_id')));
             $opcount = count($options);
             for ($j = 0; $j < $opcount; $j++) {
                 $optval = defined($options[$j]->getVar('confop_value')) ? constant($options[$j]->getVar('confop_value')) : $options[$j]->getVar('confop_value');
                 $optkey = defined($options[$j]->getVar('confop_name')) ? constant($options[$j]->getVar('confop_name')) : $options[$j]->getVar('confop_name');
-                
+
                 $ele->addOption($optval, $optkey.$addBr);
             }
             break;
@@ -132,7 +132,7 @@ if ($op == 'showmod') {
             $ele = new XoopsFormSelectGroup($title, $config[$i]->getVar('conf_name'), false, $config[$i]->getConfValueForOutput(), 5, true);
             break;
         case 'group_checkbox':
-            include_once dirname(__FILE__).'/include/formcheckboxgroup.php';
+            include_once __DIR__.'/include/formcheckboxgroup.php';
             $ele = new AltsysFormCheckboxGroup($title, $config[$i]->getVar('conf_name'), false, $config[$i]->getConfValueForOutput());
             break;
         // RMV-NOTIFY: added 'user' and 'user_multi'
@@ -145,12 +145,12 @@ if ($op == 'showmod') {
             $ele = new XoopsFormSelectUser($title, $config[$i]->getVar('conf_name'), false, $config[$i]->getConfValueForOutput(), 5, true);
             break;
         case 'password':
-            (method_exists('MyTextSanitizer', 'sGetInstance') and $myts =& MyTextSanitizer::sGetInstance()) || $myts =& MyTextSanitizer::getInstance();
+            (method_exists('MyTextSanitizer', 'sGetInstance') and $myts = MyTextSanitizer::sGetInstance()) || $myts = MyTextSanitizer::getInstance();
             $ele = new XoopsFormPassword($title, $config[$i]->getVar('conf_name'), 50, 255, $myts->htmlspecialchars($config[$i]->getConfValueForOutput()));
             break;
         case 'textbox':
         default:
-            (method_exists('MyTextSanitizer', 'sGetInstance') and $myts =& MyTextSanitizer::sGetInstance()) || $myts =& MyTextSanitizer::getInstance();
+            (method_exists('MyTextSanitizer', 'sGetInstance') and $myts = MyTextSanitizer::sGetInstance()) || $myts = MyTextSanitizer::getInstance();
             $ele = new XoopsFormText($title, $config[$i]->getVar('conf_name'), 50, 255, $myts->htmlspecialchars($config[$i]->getConfValueForOutput()));
             break;
         }
@@ -159,9 +159,7 @@ if ($op == 'showmod') {
         $ele_tray->addElement($ele);
         $ele_tray->addElement($hidden);
         $form->addElement($ele_tray) ;
-        unset($ele_tray);
-        unset($ele);
-        unset($hidden);
+        unset($ele_tray, $ele, $hidden);
     }
     // $button_tray->addElement(new XoopsFormHidden('op', 'save'));
     $xoopsGTicket->addTicketXoopsFormElement($button_tray, __LINE__, 1800, 'mypreferences') ;
@@ -171,11 +169,11 @@ if ($op == 'showmod') {
 
     // GIJ patch start
     altsys_include_mymenu() ;
-    $breadcrumbsObj =& AltsysBreadcrumbs::getInstance() ;
+    $breadcrumbsObj = AltsysBreadcrumbs::getInstance() ;
     if ($breadcrumbsObj->hasPaths()) {
         $breadcrumbsObj->appendPath(XOOPS_URL.'/modules/altsys/admin/index.php?mode=admin&amp;lib=altsys&amp;page=mypreferences', _PREFERENCES) ;
     }
-    echo "<h3 style='text-align:"._GLOBAL_LEFT.";'>".$module->getvar('name').' &nbsp; '._PREFERENCES."</h3>\n" ;
+    echo "<h3 style='text-align:"._GLOBAL_LEFT.";'>".$module->getVar('name').' &nbsp; '._PREFERENCES."</h3>\n" ;
     // GIJ patch end
 
     $form->display();
@@ -185,7 +183,7 @@ if ($op == 'showmod') {
 
 if ($op == 'save') {
     //if ( !admin_refcheck("/modules/$admin_mydirname/admin/") ) {
-    //	exit('Invalid referer');
+    //  exit('Invalid referer');
     //}
     if (! $xoopsGTicket->check(true, 'mypreferences')) {
         redirect_header(XOOPS_URL.'/', 3, $xoopsGTicket->getErrors());
@@ -194,7 +192,7 @@ if ($op == 'save') {
     $xoopsTpl = new XoopsTpl();
 //HACK by domifara for new XOOPS and XCL etc.
 //old xoops
-    $core_type = intval(altsys_get_core_type());
+    $core_type = (int)altsys_get_core_type();
     if ($core_type <= 10) {
         $xoopsTpl->clear_all_cache();
         // regenerate admin menu file
@@ -210,7 +208,7 @@ if ($op == 'save') {
     $lang_updated = false;
     if ($count > 0) {
         for ($i = 0; $i < $count; $i++) {
-            $config =& $config_handler->getConfig($conf_ids[$i]);
+            $config = $config_handler->getConfig($conf_ids[$i]);
             $new_value =& $_POST[$config->getVar('conf_name')];
             if (is_array($new_value) || $new_value != $config->getVar('conf_value')) {
                 // if language has been changed
@@ -223,7 +221,7 @@ if ($op == 'save') {
 
                 // if default theme has been changed
                 if (!$theme_updated && $config->getVar('conf_catid') == XOOPS_CONF && $config->getVar('conf_name') == 'theme_set') {
-                    $member_handler =& xoops_gethandler('member');
+                    $member_handler = xoops_getHandler('member');
                     $member_handler->updateUsersByField('theme', $_POST[$config->getVar('conf_name')]);
                     $theme_updated = true;
                 }
@@ -239,7 +237,7 @@ if ($op == 'save') {
 
                         // generate compiled files for the new theme
                         // block files only for now..
-                        $tplfile_handler =& xoops_gethandler('tplfile');
+                        $tplfile_handler = xoops_getHandler('tplfile');
                         $dtemplates =& $tplfile_handler->find('default', 'block');
                         $dcount = count($dtemplates);
 
@@ -248,7 +246,7 @@ if ($op == 'save') {
 
                         altsys_clear_templates_c() ;
 
-/*						for ($i = 0; $i < $dcount; $i++) {
+/*                      for ($i = 0; $i < $dcount; $i++) {
                             $found =& $tplfile_handler->find($newtplset, 'block', $dtemplates[$i]->getVar('tpl_refid'), null);
                             if (count($found) > 0) {
                                 // template for the new theme found, compile it
@@ -260,8 +258,8 @@ if ($op == 'save') {
                         }*/
 
                         // generate image cache files from image binary data, save them under cache/
-                        $image_handler =& xoops_gethandler('imagesetimg');
-                        $imagefiles =& $image_handler->getObjects(new Criteria('tplset_name', $newtplset), true);
+                        $image_handler = xoops_getHandler('imagesetimg');
+                        $imagefiles = $image_handler->getObjects(new Criteria('tplset_name', $newtplset), true);
                         foreach (array_keys($imagefiles) as $i) {
                             if (!$fp = fopen(XOOPS_CACHE_PATH.'/'.$newtplset.'_'.$imagefiles[$i]->getVar('imgsetimg_file'), 'wb')) {
                             } else {
@@ -275,11 +273,11 @@ if ($op == 'save') {
 
                 // add read permission for the start module to all groups
                 if (!$startmod_updated    && $new_value != '--' && $config->getVar('conf_catid') == XOOPS_CONF && $config->getVar('conf_name') == 'startpage') {
-                    $member_handler =& xoops_gethandler('member');
+                    $member_handler = xoops_getHandler('member');
                     $groups =& $member_handler->getGroupList();
-                    $moduleperm_handler =& xoops_gethandler('groupperm');
-                    $module_handler =& xoops_gethandler('module');
-                    $module =& $module_handler->getByDirname($new_value);
+                    $moduleperm_handler = xoops_getHandler('groupperm');
+                    $module_handler = xoops_getHandler('module');
+                    $module = $module_handler->getByDirname($new_value);
                     foreach ($groups as $groupid => $groupname) {
                         if (!$moduleperm_handler->checkRight('module_read', $module->getVar('mid'), $groupid)) {
                             $moduleperm_handler->addRight('module_read', $module->getVar('mid'), $groupid);

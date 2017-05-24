@@ -7,8 +7,8 @@
 
 error_reporting(0) ;
 
-include_once dirname(__FILE__).'/include/gtickets.php' ;
-include_once dirname(__FILE__).'/include/altsys_functions.php' ;
+include_once __DIR__.'/include/gtickets.php' ;
+include_once __DIR__.'/include/altsys_functions.php' ;
 
 
 // this page can be called only from altsys
@@ -49,7 +49,7 @@ if (! preg_match('/^[0-9A-Za-z_-]{1,16}$/', $tplset)) {
             break;
         }
     }
-$trs = $xoopsDB->query("SELECT distinct tpl_file,tpl_source,tpl_lastmodified FROM ".$xoopsDB->prefix("tplfile")." NATURAL LEFT JOIN ".$xoopsDB->prefix("tplsource")." WHERE tpl_tplset='".addslashes($tplset)."' ORDER BY tpl_file") ;
+$trs = $xoopsDB->query('SELECT distinct tpl_file,tpl_source,tpl_lastmodified FROM ' . $xoopsDB->prefix('tplfile') . ' NATURAL LEFT JOIN ' . $xoopsDB->prefix('tplsource') . " WHERE tpl_tplset='" . addslashes($tplset) . "' ORDER BY tpl_file") ;
 if ($xoopsDB->getRowsNum($trs) <= 0) {
     die(_TPLSADMIN_ERR_INVALIDTPLSET) ;
 }

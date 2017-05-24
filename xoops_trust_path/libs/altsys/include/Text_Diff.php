@@ -31,7 +31,7 @@ class Text_Diff
      * @param array $to_lines    An array of strings.
      */
 //HACK by domifara
-//	function Text_Diff($from_lines, $to_lines)
+//  function Text_Diff($from_lines, $to_lines)
     public function __construct($from_lines, $to_lines)
     {
         array_walk($from_lines, array($this, '_trimNewlines'));
@@ -71,7 +71,7 @@ class Text_Diff
     public function reverse()
     {
         if (version_compare(zend_version(), '2', '>')) {
-            $rev = clone($obj);
+            $rev = clone$obj;
         } else {
             $rev = $this;
         }
@@ -188,7 +188,7 @@ class Text_Diff
         $prevtype = null;
         foreach ($this->_edits as $edit) {
             if ($prevtype == get_class($edit)) {
-                trigger_error("Edit sequence is non-optimal", E_USER_ERROR);
+                trigger_error('Edit sequence is non-optimal', E_USER_ERROR);
             }
             $prevtype = get_class($edit);
         }
@@ -222,13 +222,13 @@ class Text_MappedDiff extends Text_Diff
      * @param array $mapped_to_lines    This array should have the same number
      *                                  of elements as $to_lines.
      */
-    public function Text_MappedDiff($from_lines, $to_lines,
-                             $mapped_from_lines, $mapped_to_lines)
+    public function __construct($from_lines, $to_lines,
+                                $mapped_from_lines, $mapped_to_lines)
     {
         assert(count($from_lines) == count($mapped_from_lines));
         assert(count($to_lines) == count($mapped_to_lines));
 
-        parent::Text_Diff($mapped_from_lines, $mapped_to_lines);
+        parent::__construct($mapped_from_lines, $mapped_to_lines);
 
         $xi = $yi = 0;
         for ($i = 0; $i < count($this->_edits); $i++) {
@@ -259,7 +259,6 @@ class Text_MappedDiff extends Text_Diff
  */
 class Text_Diff_Engine_xdiff
 {
-
     public function diff($from_lines, $to_lines)
     {
         /* Convert the two input arrays into strings for xdiff processing. */
@@ -325,7 +324,6 @@ class Text_Diff_Engine_xdiff
  */
 class Text_Diff_Engine_native
 {
-
     public function diff($from_lines, $to_lines)
     {
         $n_from = count($from_lines);
@@ -334,9 +332,7 @@ class Text_Diff_Engine_native
         $this->xchanged = $this->ychanged = array();
         $this->xv = $this->yv = array();
         $this->xind = $this->yind = array();
-        unset($this->seq);
-        unset($this->in_seq);
-        unset($this->lcs);
+        unset($this->seq, $this->in_seq, $this->lcs);
 
         // Skip leading common lines.
         for ($skip = 0; $skip < $n_from && $skip < $n_to; $skip++) {
@@ -362,7 +358,7 @@ class Text_Diff_Engine_native
         }
         for ($yi = $skip; $yi < $n_to - $endskip; $yi++) {
             $line = $to_lines[$yi];
-            if (($this->ychanged[$yi] = empty($xhash[$line]))) {
+            if ($this->ychanged[$yi] = empty($xhash[$line])) {
                 continue;
             }
             $yhash[$line] = 1;
@@ -371,7 +367,7 @@ class Text_Diff_Engine_native
         }
         for ($xi = $skip; $xi < $n_from - $endskip; $xi++) {
             $line = $from_lines[$xi];
-            if (($this->xchanged[$xi] = empty($yhash[$line]))) {
+            if ($this->xchanged[$xi] = empty($yhash[$line])) {
                 continue;
             }
             $this->xv[] = $line;
@@ -739,7 +735,6 @@ class Text_Diff_Engine_native
  */
 class Text_Diff_Op
 {
-
     public $orig;
     public $final;
 
@@ -767,8 +762,7 @@ class Text_Diff_Op
  */
 class Text_Diff_Op_copy extends Text_Diff_Op
 {
-
-    public function Text_Diff_Op_copy($orig, $final = false)
+    public function __construct($orig, $final = false)
     {
         if (!is_array($final)) {
             $final = $orig;
@@ -791,8 +785,7 @@ class Text_Diff_Op_copy extends Text_Diff_Op
  */
 class Text_Diff_Op_delete extends Text_Diff_Op
 {
-
-    public function Text_Diff_Op_delete($lines)
+    public function __construct($lines)
     {
         $this->orig = $lines;
         $this->final = false;
@@ -812,8 +805,7 @@ class Text_Diff_Op_delete extends Text_Diff_Op
  */
 class Text_Diff_Op_add extends Text_Diff_Op
 {
-
-    public function Text_Diff_Op_add($lines)
+    public function __construct($lines)
     {
         $this->final = $lines;
         $this->orig = false;
@@ -833,8 +825,7 @@ class Text_Diff_Op_add extends Text_Diff_Op
  */
 class Text_Diff_Op_change extends Text_Diff_Op
 {
-
-    public function Text_Diff_Op_change($orig, $final)
+    public function __construct($orig, $final)
     {
         $this->orig = $orig;
         $this->final = $final;

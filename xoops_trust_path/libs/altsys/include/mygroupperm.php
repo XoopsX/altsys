@@ -6,14 +6,14 @@ if (! defined('XOOPS_ROOT_PATH')) {
 
 function myDeleteByModule($DB, $gperm_modid, $gperm_name = null, $gperm_itemid = null)
 {
-    $criteria = new CriteriaCompo(new Criteria('gperm_modid', intval($gperm_modid)));
+    $criteria = new CriteriaCompo(new Criteria('gperm_modid', (int)$gperm_modid));
     if (isset($gperm_name)) {
         $criteria->add(new Criteria('gperm_name', $gperm_name));
         if (isset($gperm_itemid)) {
-            $criteria->add(new Criteria('gperm_itemid', intval($gperm_itemid)));
+            $criteria->add(new Criteria('gperm_itemid', (int)$gperm_itemid));
         }
     }
-    $sql = "DELETE FROM ".$DB->prefix('group_permission').' '.$criteria->renderWhere();
+    $sql = 'DELETE FROM ' . $DB->prefix('group_permission') . ' ' . $criteria->renderWhere();
     if (!$result = $DB->query($sql)) {
         return false;
     }
@@ -23,19 +23,19 @@ function myDeleteByModule($DB, $gperm_modid, $gperm_name = null, $gperm_itemid =
 
 
 // include '../../../include/cp_header.php'; GIJ
-$modid = isset($_POST['modid']) ? intval($_POST['modid']) : 1;
+$modid = isset($_POST['modid']) ? (int)$_POST['modid'] : 1;
 
 if ($modid == 1) {
     // check by the permission of eather 'altsys' or 'system'
-    $module_handler =& xoops_gethandler('module') ;
-    $module =& $module_handler->getByDirname('altsys') ;
+    $module_handler = xoops_getHandler('module') ;
+    $module = $module_handler->getByDirname('altsys') ;
     if (! is_object($module)) {
-        $module =& $module_handler->getByDirname('system') ;
+        $module = $module_handler->getByDirname('system') ;
         if (! is_object($module)) {
             die('there is no altsys nor system.') ;
         }
     }
-    $moduleperm_handler =& xoops_gethandler('groupperm') ;
+    $moduleperm_handler = xoops_getHandler('groupperm') ;
     if (! is_object(@$GLOBALS['xoopsUser']) || ! $moduleperm_handler->checkRight('module_admin', $module->getVar('mid'), $GLOBALS['xoopsUser']->getGroups())) {
         die('only admin of altsys can access this area') ;
     }
@@ -44,17 +44,17 @@ if ($modid == 1) {
     if ($modid <= 0 || !is_object($GLOBALS['xoopsUser']) || !$GLOBALS['xoopsUser']->isAdmin($modid)) {
         die(_NOPERM) ;
     }
-    $module_handler =& xoops_gethandler('module');
-    $module =& $module_handler->get($modid);
+    $module_handler = xoops_getHandler('module');
+    $module = $module_handler->get($modid);
     if (!is_object($module) || !$module->getVar('isactive')) {
         die(_MODULENOEXIST) ;
     }
 }
 
-$member_handler =& xoops_gethandler('member');
+$member_handler = xoops_getHandler('member');
 $group_list = $member_handler->getGroupList();
 if (!empty($_POST['perms']) && is_array($_POST['perms'])) {
-    $gperm_handler = xoops_gethandler('groupperm');
+    $gperm_handler = xoops_getHandler('groupperm');
     foreach ($_POST['perms'] as $perm_name => $perm_data) {
         foreach ($perm_data['itemname' ] as $item_id => $item_name) {
             // checking code
@@ -66,7 +66,7 @@ if (!empty($_POST['perms']) && is_array($_POST['perms'])) {
                     continue ;
                 }
                 foreach ($perm_data['groups'] as $group_id => $item_ids) {
-                    //				foreach ($item_ids as $item_id => $selected) {
+                    //              foreach ($item_ids as $item_id => $selected) {
                     $selected = isset($item_ids[ $item_id ]) ? $item_ids[ $item_id ] : 0 ;
                     if ($selected == 1) {
                         // make sure that all parent ids are selected as well
@@ -80,7 +80,7 @@ if (!empty($_POST['perms']) && is_array($_POST['perms'])) {
                                 }
                             }
                         }
-                        $gperm =& $gperm_handler->create();
+                        $gperm = $gperm_handler->create();
                         $gperm->setVar('gperm_groupid', $group_id);
                         $gperm->setVar('gperm_name', $perm_name);
                         $gperm->setVar('gperm_modid', $modid);
@@ -111,4 +111,4 @@ if ($module->getVar('hasadmin')) {
 $msg[] = '<br /><br /><a href="'.$backlink.'">'._BACK.'</a>';
 xoops_cp_header();
 xoops_result($msg);
-xoops_cp_footer();  GIJ */;
+xoops_cp_footer();  GIJ */

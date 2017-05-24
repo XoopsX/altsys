@@ -1,10 +1,9 @@
 <?php
 
-require_once dirname(__FILE__).'/MyBlocksAdmin.class.php' ;
+require_once __DIR__.'/MyBlocksAdmin.class.php' ;
 
 class MyBlocksAdminForX20S extends MyBlocksAdmin
 {
-
     public $block_positions = array() ;
 
     public function MyBlocksAadminForX20S()
@@ -26,7 +25,7 @@ class MyBlocksAdminForX20S extends MyBlocksAdmin
         5 => _AM_CBCENTER ,
         7 => _AM_CBBOTTOMLEFT ,
         8 => _AM_CBBOTTOMRIGHT ,
-        9 => _AM_CBBOTTOM ,
+        9 => _AM_CBBOTTOM
     ) ;
     }
 
@@ -50,39 +49,39 @@ public function renderCell4BlockPosition($block_data)
     return "
 	<table style='width:80px;'>
 		<tr>
-			<td rowspan='2'>".$this->renderRadio4BlockPosition(0, $block_data)."</td>
-			<td>".$this->renderRadio4BlockPosition(3, $block_data)."</td>
-			<td>".$this->renderRadio4BlockPosition(5, $block_data)."</td>
-			<td>".$this->renderRadio4BlockPosition(4, $block_data)."</td>
-			<td rowspan='2'>".$this->renderRadio4BlockPosition(1, $block_data)."</td>
+            <td rowspan='2'>".$this->renderRadio4BlockPosition(0, $block_data) . '</td>
+            <td>' . $this->renderRadio4BlockPosition(3, $block_data) . '</td>
+            <td>' . $this->renderRadio4BlockPosition(5, $block_data) . '</td>
+            <td>' . $this->renderRadio4BlockPosition(4, $block_data) . "</td>
+            <td rowspan='2'>".$this->renderRadio4BlockPosition(1, $block_data) . '</td>
 		</tr>
 		<tr>
-			<td>".$this->renderRadio4BlockPosition(7, $block_data)."</td>
-			<td>".$this->renderRadio4BlockPosition(9, $block_data)."</td>
-			<td>".$this->renderRadio4BlockPosition(8, $block_data)."</td>
+            <td>' . $this->renderRadio4BlockPosition(7, $block_data) . '</td>
+            <td>' . $this->renderRadio4BlockPosition(9, $block_data) . '</td>
+            <td>' . $this->renderRadio4BlockPosition(8, $block_data) . "</td>
 		</tr>
 		<tr>
-			<td colspan='5'>".$this->renderRadio4BlockPosition(-1, $block_data)._NONE."</td>
+            <td colspan='5'>".$this->renderRadio4BlockPosition(-1, $block_data)._NONE . '</td>
 		</tr>
-	</table>" ;
+    </table>';
 }
 
 
 // private
 public function renderRadio4BlockPosition($target_side, $block_data)
 {
-    $bid = intval($block_data['bid']) ;
-    $visible = intval($block_data['visible']) ;
-    $current_side = $visible ? intval($block_data['side']) : -1 ;
+    $bid = (int)$block_data['bid'];
+    $visible = (int)$block_data['visible'];
+    $current_side = $visible ? (int)$block_data['side'] : -1 ;
 
     $label4disp = htmlspecialchars($this->block_positions[ $target_side ], ENT_QUOTES) ;
 
     if ($current_side == $target_side) {
         $checked = "checked='checked'" ;
-        $divstyle = $target_side == -1 ? "disabled" : "selected" ;
+        $divstyle = $target_side == -1 ? 'disabled' : 'selected';
     } else {
-        $checked = "" ;
-        $divstyle = "unselected" ;
+        $checked = '';
+        $divstyle = 'unselected';
     }
 
     return "<div class='blockposition $divstyle' title='$label4disp'><input type='radio' name='sides[$bid]' value='$target_side' class='blockposition' $checked /></div>" ;
